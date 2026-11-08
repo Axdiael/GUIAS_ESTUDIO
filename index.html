@@ -205,6 +205,21 @@ const courseData = {
         ],
         examples: "Si la universidad decide cambiar sus servidores de Windows a Linux Ubuntu, un software con alta **Adaptabilidad** requerirá mínimos cambios en su código para seguir funcionando correctamente."
     },
+    iso25010_seguridad: {
+        title: "3.8 Seguridad (ISO 25010 y 27001)",
+        explanation: "Un software seguro no depende solo de que el código esté bien hecho, sino también de cómo la organización gestiona los riesgos y políticas de información. La ISO 25010 evalúa la seguridad del producto, mientras que la ISO 27001 implementa un SGSI (Sistema de Gestión de Seguridad de la Información).",
+        summary: [
+            "<strong>ISO 25010 (Producto):</strong> Protege mediante Confidencialidad, Integridad, No repudio, Responsabilidad y Autenticidad.",
+            "<strong>ISO 27001 (Proceso/Gestión):</strong> Se basa en el análisis y tratamiento de riesgos, políticas, y el ciclo de mejora continua PDCA (Planear, Hacer, Verificar, Actuar).",
+            "<strong>Sinergia:</strong> ISO 25010 + ISO 27001 = Software confiable y organizaciones resilientes.",
+            "<strong>Fallos Comunes:</strong> Inyección SQL, contraseñas débiles, falta de cifrado, exposición de información sensible y librerías desactualizadas."
+        ],
+        concepts: [
+            { term: "SGSI (ISO 27001)", def: "Sistema de Gestión de Seguridad de la Información. Es el marco de trabajo para proteger los datos en una organización." },
+            { term: "Integridad (ISO 25010)", def: "Garantizar que la información no sea alterada de forma no autorizada." }
+        ],
+        examples: "Imagina una app de banca en línea muy bien programada (Cumple ISO 25010). Sin embargo, si los desarrolladores anotan las contraseñas de los servidores en post-its o no aplican parches de seguridad (Falla en SGSI/ISO 27001), el sistema entero es vulnerable."
+    },
     metodologias: {
         title: "4. Metodologías de Desarrollo",
         explanation: "Formas estructuradas de planificar y gestionar el desarrollo de software, afectando directamente cómo se asegura la calidad.",
@@ -240,7 +255,9 @@ const flashcardsData = [
     { q: "¿Qué busca la metodología Lean Development?", a: "Eliminar desperdicios (lo que no aporta valor), entregar rápido y empoderar al equipo." },
     { q: "¿Cuáles son las 8 características principales de ISO 25010?", a: "Adecuación Funcional, Eficiencia, Compatibilidad, Usabilidad, Fiabilidad, Seguridad, Mantenibilidad, Portabilidad." },
     { q: "En Scrum, ¿qué reunión diaria responde a: qué hice ayer, qué haré hoy y qué obstáculos tengo?", a: "Daily Scrum (Reunión diaria)." },
-    { q: "¿Qué es la 'Capacidad de aprendizaje' en Usabilidad?", a: "Poder usar el sistema con facilidad y sin depender continuamente de manuales o capacitación extensa." }
+    { q: "¿Qué es la 'Capacidad de aprendizaje' en Usabilidad?", a: "Poder usar el sistema con facilidad y sin depender continuamente de manuales o capacitación extensa." },
+    { q: "¿Cuáles son las dimensiones de Seguridad según la ISO 25010?", a: "Confidencialidad, Integridad, No repudio, Responsabilidad, Autenticidad." },
+    { q: "¿Qué es el SGSI y a qué norma pertenece?", a: "Sistema de Gestión de Seguridad de la Información, perteneciente a la ISO/IEC 27001." }
 ];
 
 const quizPool = [
@@ -315,6 +332,18 @@ const quizPool = [
         options: ["Scrum", "Prototipado", "Modelo en V", "Lean"],
         answer: 2,
         exp: "El Modelo en V vincula cada fase de diseño/requisitos con su correspondiente nivel de prueba (unitaria, integración, sistema, aceptación)."
+    },
+    {
+        q: "¿Qué norma implementarías junto con la ISO 25010 para establecer políticas, controles de acceso y un correcto análisis de riesgos (SGSI)?",
+        options: ["ISO 9000", "ISO/IEC 12207", "ISO/IEC 27001", "ISO 9001"],
+        answer: 2,
+        exp: "La ISO/IEC 27001 se enfoca en el Sistema de Gestión de Seguridad de la Información (SGSI)."
+    },
+    {
+        q: "¿Cuál de las siguientes es una dimensión de la Seguridad del Software según ISO 25010?",
+        options: ["Adaptabilidad", "No repudio", "Tolerancia a fallos", "Madurez"],
+        answer: 1,
+        exp: "Las dimensiones de seguridad (ISO 25010) son Confidencialidad, Integridad, No repudio, Responsabilidad y Autenticidad."
     }
 ];
 
