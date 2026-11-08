@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Estudio - Calidad de Software</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .flip-card { perspective: 1000px; height: 300px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; display: flex; align-items: center; justify-content: center; padding: 2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .flip-card-front { background-color: #ffffff; border: 2px solid #e2e8f0; }
+        .flip-card-back { background-color: #eff6ff; border: 2px solid #bfdbfe; transform: rotateY(180deg); }
+        
+        .nav-item.active { background-color: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; font-weight: 600; }
+        .nav-item { transition: all 0.2s; border-right: 4px solid transparent; }
+        .nav-item:hover:not(.active) { background-color: #f1f5f9; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-50 z-40 hidden lg:hidden" onclick="toggleMenu()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white w-72 h-full flex-shrink-0 border-r border-gray-200 overflow-y-auto fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                Calidad de SW
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">Guía interactiva de estudio</p>
+        </div>
+        
+        <div class="px-6 mb-4">
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="overall-progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-right" id="overall-progress-text">0% Completado</p>
+        </div>
+
+        <nav class="flex flex-col gap-1 pb-6" id="nav-container">
+            <!-- Navigation items injected via JS -->
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full overflow-y-auto flex flex-col relative w-full">
+        <!-- Topbar for mobile -->
+        <header class="bg-white border-b border-gray-200 p-4 flex items-center justify-between lg:hidden sticky top-0 z-30 shadow-sm">
+            <h2 class="font-bold text-gray-800 truncate" id="mobile-header-title">Inicio</h2>
+            <button onclick="toggleMenu()" class="p-2 bg-gray-100 rounded-md text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </header>
+
+        <div class="p-6 lg:p-10 max-w-5xl mx-auto w-full flex-1" id="main-content">
+            <!-- Content injected here -->
+        </div>
+    </main>
+
+<script>
+// --- DATA STRUCTURES ---
+
+const courseData = {
+    fundamentos: {
+        title: "1. Fundamentos de Calidad",
+        explanation: "La calidad del software no se trata solo de que un programa 'funcione' o compile sin errores, sino de que funcione bien, de forma estable, segura y que cumpla exactamente con lo que el cliente necesita. Es un equilibrio entre los **requisitos funcionales** (lo que hace el sistema) y los **requisitos no funcionales** (cómo lo hace: velocidad, seguridad, facilidad de uso).",
+        summary: [
+            "<strong>ISO 9000:2015:</strong> 'Grado en el que un conjunto de características inherentes cumple con los requisitos.'",
+            "<strong>Joseph Juran:</strong> 'Adecuación para el uso'. El software es de calidad si sirve para su propósito de forma confiable.",
+            "<strong>Philip Crosby:</strong> 'Cumplimiento de requisitos'. Hacer las cosas bien desde la primera vez para evitar retrabajos.",
+            "<strong>Calidad en Uso:</strong> Evalúa cómo se comporta el software cuando es utilizado por usuarios reales (Efectividad, Eficiencia, Satisfacción, Seguridad, Cobertura)."
+        ],
+        concepts: [
+            { term: "Requisito Funcional (RF)", def: "Define lo que el sistema debe hacer. Ej. 'El sistema debe permitir registrar usuarios con correo y contraseña'." },
+            { term: "Requisito No Funcional (RNF)", def: "Define cómo debe comportarse el sistema. Afectan directamente a la calidad. Ej. 'El sistema debe responder en menos de 2 segundos'." }
+        ],
+        examples: "Imagina una aplicación para transferencias bancarias. Si te permite enviar dinero (cumple RF), pero tarda 5 minutos procesando y a veces se cierra sola (falla en RNF - Eficiencia y Fiabilidad), entonces es un software de mala calidad, aunque 'funcione' técnicamente."
+    },
+    iso12207: {
+        title: "2. ISO/IEC 12207 (Procesos)",
+        explanation: "La norma ISO/IEC 12207 se enfoca en la **Calidad del PROCESO**. Define un marco común para los procesos del ciclo de vida del software, desde que nace la idea hasta que el software es retirado. Su premisa es: *'La calidad del software no es casualidad, es el resultado de buenos procesos.'*",
+        summary: [
+            "Establece una estructura para desarrollar, operar y mantener software de manera sistemática.",
+            "Es independiente del modelo de desarrollo (Cascada, Ágil, etc.).",
+            "<strong>Procesos Primarios:</strong> Adquisición, Suministro, Desarrollo, Operación, Mantenimiento, Retiro.",
+            "<strong>Procesos de Apoyo:</strong> Gestión de Configuración, Aseguramiento de Calidad (QA), Verificación, Validación, Documentación, Mejora de Procesos."
+        ],
+        concepts: [
+            { term: "Verificación", def: "Asegurar que el producto se construyó correctamente según las especificaciones. (¿Construimos el producto correctamente?)" },
+            { term: "Validación", def: "Asegurar que el producto cumple con las necesidades reales del usuario. (¿Construimos el producto correcto?)" },
+            { term: "Relación 12207 y 25010", def: "ISO 12207 cuida el CÓMO se hace (Proceso) y ISO 25010 evalúa el QUÉ se hizo (Producto). Juntos garantizan alta calidad." }
+        ],
+        examples: "En una empresa desarrolladora, usar ISO 12207 significa que tienen estandarizado cómo documentan los requisitos (Desarrollo), cómo guardan las versiones del código (Gestión de Configuración) y cómo atienden reportes de errores (Mantenimiento). No importa si hacen una app móvil o un sistema contable, el proceso base es el mismo."
+    },
+    iso25010_funcional: {
+        title: "3.1 Adecuación Funcional",
+        explanation: "Evalúa si el software hace realmente lo que debe hacer para satisfacer las necesidades del usuario. ¡Ojo! Un software que funciona correctamente a nivel técnico no siempre es un software de calidad si no cumple lo que el usuario necesita.",
+        summary: [
+            "<strong>1. Completitud funcional:</strong> ¿Están todas las funciones necesarias? (Ej. En una tienda en línea, si falta la función de facturación, está incompleto).",
+            "<strong>2. Corrección funcional:</strong> ¿Las funciones producen resultados correctos? (Ej. La calculadora de IVA suma un porcentaje erróneo).",
+            "<strong>3. Pertinencia funcional:</strong> ¿Las funciones ayudan a lograr el objetivo fácilmente? (Ej. Para comprar hay que dar 7 clics innecesarios; funciona y es correcto, pero no es pertinente/adecuado)."
+        ],
+        concepts: [
+            { term: "Adecuación Funcional (ISO 25010)", def: "Grado en que un producto proporciona funciones que satisfacen las necesidades establecidas e implícitas bajo condiciones especificadas." }
+        ],
+        examples: "Caso: Una app universitaria permite iniciar sesión e inscribir materias (Completitud OK). Sin embargo, permite inscribir materias sin haber aprobado los prerrequisitos. El sistema 'funciona', pero falla en **Corrección funcional** porque no cumple la regla de negocio."
+    },
+    iso25010_eficiencia: {
+        title: "3.2 Eficiencia de Desempeño",
+        explanation: "Evalúa el desempeño adecuado del sistema en relación con la cantidad de recursos que utiliza bajo ciertas condiciones. Es el equilibrio entre rapidez y el consumo de memoria, procesador, red o batería.",
+        summary: [
+            "<strong>1. Comportamiento temporal:</strong> Tiempos de respuesta y latencia. (¿Qué tan rápido responde?)",
+            "<strong>2. Utilización de recursos:</strong> Consumo de memoria RAM, CPU, ancho de banda, batería.",
+            "<strong>3. Capacidad:</strong> Límites máximos que soporta el sistema (volumen de datos, usuarios concurrentes)."
+        ],
+        concepts: [
+            { term: "Eficiencia (RNF)", def: "Se mide mediante métricas objetivas durante pruebas de carga, estrés y monitoreo." },
+            { term: "SLA (Service Level Agreement)", def: "Acuerdos que suelen definir los tiempos máximos de respuesta permitidos." }
+        ],
+        examples: "Si tienes dos aplicaciones web idénticas, pero una consume 50MB de RAM y carga en 1 segundo, mientras la otra consume 500MB de RAM y tarda 10 segundos, la primera tiene una excelente Eficiencia de Desempeño. Para validar la Capacidad, probarías si el sistema soporta 10,000 usuarios al mismo tiempo sin colapsar."
+    },
+    iso25010_compatibilidad: {
+        title: "3.3 Compatibilidad",
+        explanation: "Capacidad de diferentes aplicaciones, componentes y sistemas para funcionar correctamente juntos en el mismo equipo o red sin generar conflictos.",
+        summary: [
+            "<strong>1. Coexistencia:</strong> Funcionar en el mismo entorno (ej. misma computadora o servidor) compartiendo recursos sin perjudicarse mutuamente.",
+            "<strong>2. Interoperabilidad:</strong> Capacidad de dos o más sistemas para intercambiar información y utilizarla eficazmente."
+        ],
+        concepts: [
+            { term: "Coexistencia", def: "Vivir en la misma casa sin pelear. (Ej. Antivirus y un videojuego corriendo al mismo tiempo sin trabar la PC)." },
+            { term: "Interoperabilidad", def: "Hablar el mismo idioma para trabajar juntos. (Ej. Un CRM que se conecta con Mailchimp por API para mandar correos)." }
+        ],
+        examples: "Riesgo de coexistencia: Un sistema de base de datos que acapara toda la memoria del servidor e impide que la aplicación web funcione. Riesgo de interoperabilidad: Una app de salud que no logra sincronizar los datos de pasos con un Smartwatch."
+    },
+    iso25010_usabilidad: {
+        title: "3.4 Usabilidad",
+        explanation: "Evalúa qué tan fácil es para una persona comprender, aprender, operar y sentirse atraída por el sistema. Un software usable no solo 'se ve bonito', facilita la tarea al usuario.",
+        summary: [
+            "<strong>1. Adecuación reconocible:</strong> El usuario entiende rápido para qué sirve la app y qué puede hacer.",
+            "<strong>2. Capacidad de aprendizaje:</strong> Fácil de aprender a usar sin depender de un manual de 20 páginas.",
+            "<strong>3. Operabilidad:</strong> Fácil de navegar, predecible, botones claros, permite completar tareas.",
+            "<strong>4. Protección contra errores:</strong> Evita que te equivoques (advierte antes de borrar) y facilita la corrección.",
+            "<strong>5. Estética de la interfaz:</strong> Jerarquía clara, colores agradables, no saturada.",
+            "<strong>6. Accesibilidad:</strong> Puede ser usada por personas con discapacidades (lectores de pantalla, contraste)."
+        ],
+        concepts: [
+            { term: "UI vs UX", def: "UI (Interfaz de Usuario) es lo que ocurre en la pantalla (diseño). UX (Experiencia de Usuario) es lo que ocurre delante de la pantalla (cómo se siente el usuario al usarlo)." }
+        ],
+        examples: "Si en una tienda en línea le das a 'Eliminar cuenta' y se borra instantáneamente sin preguntarte '¿Estás seguro?', el sistema falla en **Protección contra errores**. Si los botones son íconos sin texto y no sabes qué hacen, falla en **Adecuación reconocible**."
+    },
+    iso25010_fiabilidad: {
+        title: "3.5 Fiabilidad",
+        explanation: "Grado en el que un sistema está operativo y accesible cuando se necesita, manteniendo su desempeño bajo condiciones establecidas.",
+        summary: [
+            "<strong>1. Madurez:</strong> Capacidad de evitar fallos. Un software que lleva meses operando sin caerse.",
+            "<strong>2. Disponibilidad:</strong> Estar operativo y accesible cuando se requiere (se mide en nueves, ej. 99.9%).",
+            "<strong>3. Tolerancia a fallos:</strong> Si algo falla, el sistema sigue funcionando (Ej. Redundancia, servidores de respaldo).",
+            "<strong>4. Capacidad de recuperación:</strong> Después de un fallo fatal, ¿qué tan rápido vuelve a funcionar (RTO) y cuántos datos se pierden (RPO)?"
+        ],
+        concepts: [
+            { term: "RTO (Recovery Time Objective)", def: "Cuánto tiempo tarda el sistema en volver a levantarse tras un fallo." },
+            { term: "RPO (Recovery Point Objective)", def: "Cuánta información/tiempo de datos se tolera perder." }
+        ],
+        examples: "Frase clave: 'Evitar (Madurez) -> Resistir (Tolerancia) -> Recuperar (Recuperación) -> Estar disponible (Disponibilidad)'. Ejemplo: Si Netflix detecta que un servidor en USA se cae, pero en milisegundos redirige el tráfico a un servidor en Canadá y tú no dejas de ver tu película, tiene alta **Tolerancia a fallos**."
+    },
+    iso25010_mantenibilidad: {
+        title: "3.6 Mantenibilidad",
+        explanation: "Un software no termina cuando se entrega. Tendrá que corregirse, mejorarse y actualizarse. La mantenibilidad es qué tan fácil, seguro y barato es hacer estos cambios.",
+        summary: [
+            "<strong>1. Modularidad:</strong> Dividido en partes independientes. Un cambio en 'Pagos' no rompe 'Calificaciones'.",
+            "<strong>2. Reusabilidad:</strong> Usar código ya creado. (Ej. El mismo módulo de login para web y móvil).",
+            "<strong>3. Analizabilidad:</strong> Facilidad para encontrar la causa de un bug (logs claros, código ordenado).",
+            "<strong>4. Modificabilidad:</strong> Cambiar código sin causar efecto dominó (sin romper otras cosas).",
+            "<strong>5. Testabilidad:</strong> Facilidad para probar el software modificado (automatización)."
+        ],
+        concepts: [
+            { term: "Deuda Técnica", def: "Hacer el código rápido y mal hoy, que costará mucho más tiempo arreglar o modificar mañana. Baja mantenibilidad." }
+        ],
+        examples: "Si un desarrollador dice: 'Si modifico el descuento de temporada, probablemente deje de funcionar el carrito de compras y la facturación', el sistema tiene pésima **Modularidad** y **Modificabilidad** debido al alto acoplamiento."
+    },
+    iso25010_portabilidad: {
+        title: "3.7 Portabilidad",
+        explanation: "Grado en que un sistema puede transferirse de un entorno (hardware, software, OS) a otro.",
+        summary: [
+            "<strong>1. Adaptabilidad:</strong> Capacidad de adaptarse a distintos entornos (Ej. Diseño responsivo para móviles, tablets y PC, o funcionar en Windows y Linux).",
+            "<strong>2. Instalabilidad:</strong> Facilidad para instalar/desinstalar el software en un entorno específico.",
+            "<strong>3. Reemplazabilidad:</strong> Capacidad de sustituir a otro software similar para el mismo propósito en el mismo entorno."
+        ],
+        concepts: [
+            { term: "Migración", def: "Proceso donde la portabilidad es vital. Ej. Pasar un sistema de servidores locales a la Nube (AWS/Azure)." }
+        ],
+        examples: "Si la universidad decide cambiar sus servidores de Windows a Linux Ubuntu, un software con alta **Adaptabilidad** requerirá mínimos cambios en su código para seguir funcionando correctamente."
+    },
+    metodologias: {
+        title: "4. Metodologías de Desarrollo",
+        explanation: "Formas estructuradas de planificar y gestionar el desarrollo de software, afectando directamente cómo se asegura la calidad.",
+        summary: [
+            "<strong>Cascada (Waterfall):</strong> Lineal, rígida, muy documentada. Pruebas al final. Mala para cambios, buena para requisitos muy claros.",
+            "<strong>Modelo en V:</strong> Variante de cascada. Por cada fase de desarrollo hay una fase de pruebas planeada simultáneamente. Fuerte en verificación.",
+            "<strong>Scrum (Ágil):</strong> Iterativo (Sprints 2-4 semanas). Entregas incrementales. Retroalimentación constante. Eventos: Planning, Daily, Review, Retrospective.",
+            "<strong>Prototipado / Incremental:</strong> Crear versiones parciales (prototipos) para validar rápido con el usuario. Evita crear cosas que el usuario no quiere.",
+            "<strong>Espiral:</strong> Enfoque absoluto en la gestión y análisis de RIESGOS en ciclos iterativos. Para sistemas complejos/críticos.",
+            "<strong>Lean:</strong> Eliminar desperdicios (cosas que no aportan valor), entregar rápido, empoderar al equipo. Construir -> Medir -> Aprender.",
+            "<strong>XP (Extreme Programming):</strong> Prácticas técnicas ágiles intensas: Programación en pareja, pruebas unitarias continuas, refactorización, simplicidad."
+        ],
+        concepts: [
+            { term: "Sprint (Scrum)", def: "Ciclo de trabajo enfocado y corto donde se construye un incremento de software funcional." },
+            { term: "Definition of Done (DoD)", def: "En metodologías ágiles, la lista de criterios de calidad que un requerimiento debe cumplir para considerarse terminado." }
+        ],
+        examples: "Si estás haciendo software para un avión, usarás **Espiral** o **Modelo en V** por su rigor y enfoque en riesgos y pruebas. Si estás haciendo una startup y no estás seguro de lo que el cliente quiere, usarás **Scrum** o **Prototipado** para iterar rápido."
+    }
+};
+
+const flashcardsData = [
+    { q: "¿Qué norma ISO define las características de calidad del producto de software?", a: "ISO/IEC 25010" },
+    { q: "¿Qué norma ISO define los procesos del ciclo de vida del software?", a: "ISO/IEC 12207" },
+    { q: "Según Philip Crosby, ¿qué es la calidad?", a: "El cumplimiento de los requisitos (hacerlo bien a la primera)." },
+    { q: "Subcaracterística de Usabilidad que trata de evitar que el usuario cometa equivocaciones graves.", a: "Protección contra errores de usuario." },
+    { q: "¿Cuáles son los tres componentes de la Adecuación Funcional?", a: "Completitud, Corrección y Pertinencia." },
+    { q: "Si un software tiene un error y al buscar en el código encontramos fácilmente la causa gracias a los logs, hablamos de buena...", a: "Analizabilidad (Mantenibilidad)" },
+    { q: "Diferencia entre Coexistencia e Interoperabilidad", a: "Coexistencia: vivir en el mismo entorno sin chocar. Interoperabilidad: intercambiar información entre sí." },
+    { q: "¿Qué subcaracterística de la Fiabilidad permite que el sistema siga operando aunque falle un servidor?", a: "Tolerancia a fallos." },
+    { q: "¿Qué metodología de desarrollo basa todo su ciclo en la evaluación constante de Riesgos?", a: "Metodología Espiral." },
+    { q: "¿Qué son la UI y la UX?", a: "UI: Interfaz (lo visual en pantalla). UX: Experiencia (cómo se siente y navega el usuario)." },
+    { q: "Si al modificar el módulo de Pagos, se rompe el de Calificaciones, ¿qué subcaracterística falla?", a: "Modularidad / Modificabilidad (Alto acoplamiento)." },
+    { q: "¿Qué busca la metodología Lean Development?", a: "Eliminar desperdicios (lo que no aporta valor), entregar rápido y empoderar al equipo." },
+    { q: "¿Cuáles son las 8 características principales de ISO 25010?", a: "Adecuación Funcional, Eficiencia, Compatibilidad, Usabilidad, Fiabilidad, Seguridad, Mantenibilidad, Portabilidad." },
+    { q: "En Scrum, ¿qué reunión diaria responde a: qué hice ayer, qué haré hoy y qué obstáculos tengo?", a: "Daily Scrum (Reunión diaria)." },
+    { q: "¿Qué es la 'Capacidad de aprendizaje' en Usabilidad?", a: "Poder usar el sistema con facilidad y sin depender continuamente de manuales o capacitación extensa." }
+];
+
+const quizPool = [
+    {
+        q: "Si un usuario presiona 'Eliminar' y el sistema borra el registro sin pedir confirmación, afectando su experiencia, ¿qué subcaracterística falla?",
+        options: ["Operabilidad", "Protección contra errores", "Adecuación reconocible", "Madurez"],
+        answer: 1,
+        exp: "La 'Protección contra errores' advierte sobre acciones riesgosas y permite deshacer cambios."
+    },
+    {
+        q: "¿Qué autor define la calidad como la 'Adecuación para el uso'?",
+        options: ["Philip Crosby", "Joseph Juran", "ISO", "Pressman"],
+        answer: 1,
+        exp: "Joseph Juran propuso que la calidad significa que el producto es adecuado para el uso previsto."
+    },
+    {
+        q: "La aplicación funciona rápido, pero al calcular el IVA usa un 10% en lugar del 16% legal. Esto es un fallo en:",
+        options: ["Eficiencia de desempeño", "Pertinencia funcional", "Corrección funcional", "Completitud funcional"],
+        answer: 2,
+        exp: "Es un fallo de 'Corrección funcional' porque la función existe, pero no produce los resultados matemáticos o lógicos correctos."
+    },
+    {
+        q: "Una metodología lineal, rígida, donde las pruebas se realizan hasta el final de la fase de implementación:",
+        options: ["Scrum", "Prototipado", "Espiral", "Cascada (Waterfall)"],
+        answer: 3,
+        exp: "El modelo en Cascada es secuencial y las pruebas de validación ocurren tarde en el ciclo."
+    },
+    {
+        q: "¿Qué norma usarías para estandarizar CÓMO debe trabajar tu equipo (fases, documentación, etc.)?",
+        options: ["ISO 9000", "ISO/IEC 25010", "ISO/IEC 12207", "ISO 27001"],
+        answer: 2,
+        exp: "ISO/IEC 12207 define los procesos del ciclo de vida del software (el CÓMO), mientras 25010 define las características del producto."
+    },
+    {
+        q: "Tener el código organizado en componentes independientes para que un cambio no afecte al resto se llama:",
+        options: ["Reusabilidad", "Modularidad", "Tolerancia a fallos", "Analizabilidad"],
+        answer: 1,
+        exp: "La Modularidad es parte de la Mantenibilidad y reduce el 'efecto dominó' al modificar código."
+    },
+    {
+        q: "¿Qué busca la característica de Portabilidad?",
+        options: ["Que el sistema cargue en menos de 2 segundos", "Transferir el sistema de un entorno a otro", "Intercambiar datos con APIs", "Evitar caídas de servidor"],
+        answer: 1,
+        exp: "Portabilidad incluye Adaptabilidad, Instalabilidad y Reemplazabilidad en distintos entornos."
+    },
+    {
+        q: "En XP (Extreme Programming), ¿cuál de las siguientes es una práctica clave?",
+        options: ["Reunión de retrospectiva mensual", "Diseño complejo desde el inicio", "Programación en pareja", "Documentación exhaustiva antes de codificar"],
+        answer: 2,
+        exp: "XP promueve la Programación en pareja (Pair programming), pruebas continuas y diseño simple."
+    },
+    {
+        q: "Si un software tiene botones diminutos amontonados y 15 colores chillones, los usuarios se quejan de la:",
+        options: ["Estética de la interfaz", "Adecuación reconocible", "Operabilidad", "Capacidad de aprendizaje"],
+        answer: 0,
+        exp: "La Estética (Usabilidad) exige información presentada de forma agradable, ordenada y jerárquica."
+    },
+    {
+        q: "El RPO (Recovery Point Objective) y el RTO (Recovery Time Objective) están ligados a la subcaracterística de:",
+        options: ["Madurez", "Capacidad de recuperación", "Tolerancia a fallos", "Disponibilidad"],
+        answer: 1,
+        exp: "La Capacidad de recuperación determina cuánto tardas en volver (RTO) y cuántos datos toleras perder (RPO) tras un fallo."
+    },
+    {
+        q: "Dos sistemas (Ej. Antivirus y Juego) corren en la misma PC sin afectarse el rendimiento. Esto es:",
+        options: ["Interoperabilidad", "Coexistencia", "Eficiencia", "Adaptabilidad"],
+        answer: 1,
+        exp: "La Coexistencia (Compatibilidad) significa compartir recursos sin causar efectos perjudiciales al otro."
+    },
+    {
+        q: "Un modelo que planea las pruebas de forma paralela y simultánea a cada fase de desarrollo:",
+        options: ["Scrum", "Prototipado", "Modelo en V", "Lean"],
+        answer: 2,
+        exp: "El Modelo en V vincula cada fase de diseño/requisitos con su correspondiente nivel de prueba (unitaria, integración, sistema, aceptación)."
+    }
+];
+
+// --- APP LOGIC ---
+
+let completedModules = JSON.parse(localStorage.getItem('calidad_sw_progress')) || [];
+let currentQuiz = [];
+let currentQuizIndex = 0;
+let quizScore = 0;
+let flashcardIndex = 0;
+
+// Initialize App
+function initApp() {
+    renderSidebar();
+    updateProgress();
+    loadView('fundamentos');
+}
+
+// Navigation
+function renderSidebar() {
+    const navContainer = document.getElementById('nav-container');
+    navContainer.innerHTML = '';
+    
+    // Auto-generate topic links
+    for (const key in courseData) {
+        navContainer.innerHTML += `
+            <button onclick="loadView('${key}')" id="nav-${key}" class="nav-item w-full text-left px-6 py-3 text-sm text-gray-700 flex items-center justify-between">
+                <span>${courseData[key].title}</span>
+                ${completedModules.includes(key) ? '<svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
+            </button>
+        `;
+    }
+    
+    // Add tools
+    navContainer.innerHTML += `
+        <div class="mt-4 mb-2 px-6 text-xs font-bold text-gray-400 uppercase tracking-wider">Herramientas</div>
+        <button onclick="loadFlashcards()" id="nav-flashcards" class="nav-item w-full text-left px-6 py-3 text-sm text-gray-700"><span class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Flashcards</span></button>
+        <button onclick="startExam()" id="nav-exam" class="nav-item w-full text-left px-6 py-3 text-sm text-gray-700"><span class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> Simulador de Examen</span></button>
+    `;
+}
+
+function updateActiveNav(id) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const activeEl = document.getElementById(`nav-${id}`);
+    if(activeEl) activeEl.classList.add('active');
+    
+    // Update mobile header
+    const title = activeEl ? activeEl.innerText : 'Calidad de Software';
+    document.getElementById('mobile-header-title').innerText = title;
+}
+
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    
+    if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+}
+
+// Update Progress
+function updateProgress() {
+    const total = Object.keys(courseData).length;
+    const completed = completedModules.length;
+    const percentage = Math.round((completed / total) * 100);
+    
+    document.getElementById('overall-progress-bar').style.width = `${percentage}%`;
+    document.getElementById('overall-progress-text').innerText = `${percentage}% Completado`;
+}
+
+function markAsStudied(id) {
+    if (!completedModules.includes(id)) {
+        completedModules.push(id);
+        localStorage.setItem('calidad_sw_progress', JSON.stringify(completedModules));
+        renderSidebar();
+        updateProgress();
+        updateActiveNav(id);
+        
+        // Show subtle notification (optional)
+        const btn = document.getElementById('btn-studied');
+        btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Estudiado';
+        btn.classList.replace('bg-blue-600', 'bg-green-600');
+        btn.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
+    }
+}
+
+// Content Rendering
+function loadView(topicId) {
+    updateActiveNav(topicId);
+    if(window.innerWidth < 1024) toggleMenu(); // auto-close on mobile
+    
+    const topic = courseData[topicId];
+    const isCompleted = completedModules.includes(topicId);
+    
+    let html = `
+        <div class="fade-in pb-20">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <h2 class="text-3xl font-bold text-gray-800">${topic.title}</h2>
+                <button id="btn-studied" onclick="markAsStudied('${topicId}')" class="flex items-center gap-2 px-4 py-2 ${isCompleted ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-lg shadow transition-colors focus:outline-none">
+                    ${isCompleted ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Estudiado' : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Marcar como Estudiado'}
+                </button>
+            </div>
+
+            <!-- Explicación -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Explicación Sencilla</h3>
+                <p class="text-gray-700 leading-relaxed">${topic.explanation}</p>
+            </div>
+
+            <!-- Resumen -->
+            <div class="bg-blue-50 p-6 rounded-xl mb-6 border border-blue-100">
+                <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg> Puntos Clave</h3>
+                <ul class="space-y-2">
+                    ${topic.summary.map(s => `<li class="flex items-start gap-2"><span class="text-blue-500 font-bold mt-0.5">•</span> <span class="text-gray-700">${s}</span></li>`).join('')}
+                </ul>
+            </div>
+
+            <!-- Conceptos & Ejemplos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg> Conceptos Importantes</h3>
+                    <div class="space-y-4">
+                        ${topic.concepts.map(c => `
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 border-l-4 border-l-yellow-400">
+                                <h4 class="font-bold text-gray-900">${c.term}</h4>
+                                <p class="text-sm text-gray-600 mt-1">${c.def}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> Ejemplo Práctico</h3>
+                    <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100 text-gray-700 h-full">
+                        ${topic.examples}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end">
+                 <button onclick="loadNextTopic('${topicId}')" class="flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800">
+                    Siguiente Tema <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                 </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('main-content').innerHTML = html;
+}
+
+function loadNextTopic(currentId) {
+    const keys = Object.keys(courseData);
+    const currentIndex = keys.indexOf(currentId);
+    if (currentIndex < keys.length - 1) {
+        loadView(keys[currentIndex + 1]);
+    } else {
+        loadFlashcards();
+    }
+}
+
+// Flashcards
+function loadFlashcards() {
+    updateActiveNav('flashcards');
+    if(window.innerWidth < 1024) toggleMenu();
+    flashcardIndex = 0;
+    
+    renderFlashcardUI();
+}
+
+function renderFlashcardUI() {
+    const card = flashcardsData[flashcardIndex];
+    
+    let html = `
+        <div class="fade-in max-w-2xl mx-auto pb-10">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-800">Tarjetas de Estudio</h2>
+                <p class="text-gray-500 mt-2">Haz clic en la tarjeta para ver la respuesta.</p>
+                <div class="mt-4 text-sm font-semibold text-blue-600">Tarjeta ${flashcardIndex + 1} de ${flashcardsData.length}</div>
+            </div>
+
+            <div class="flip-card mx-auto w-full" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner shadow-lg">
+                    <div class="flip-card-front flex-col text-center">
+                        <span class="text-blue-500 font-bold mb-4 uppercase tracking-widest text-xs">Concepto / Pregunta</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800">${card.q}</h3>
+                    </div>
+                    <div class="flip-card-back flex-col text-center">
+                        <span class="text-blue-600 font-bold mb-4 uppercase tracking-widest text-xs">Respuesta</span>
+                        <p class="text-lg text-gray-800 font-medium">${card.a}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button onclick="prevCard()" class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium ${flashcardIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${flashcardIndex === 0 ? 'disabled' : ''}>Anterior</button>
+                <button onclick="nextCard()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium ${flashcardIndex === flashcardsData.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${flashcardIndex === flashcardsData.length - 1 ? 'disabled' : ''}>Siguiente</button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('main-content').innerHTML = html;
+}
+
+function nextCard() {
+    if (flashcardIndex < flashcardsData.length - 1) {
+        flashcardIndex++;
+        renderFlashcardUI();
+    }
+}
+
+function prevCard() {
+    if (flashcardIndex > 0) {
+        flashcardIndex--;
+        renderFlashcardUI();
+    }
+}
+
+// EXAM SIMULATOR
+function startExam() {
+    updateActiveNav('exam');
+    if(window.innerWidth < 1024) toggleMenu();
+    
+    // Shuffle and pick 10 questions for the exam
+    currentQuiz = [...quizPool].sort(() => 0.5 - Math.random()).slice(0, 10);
+    currentQuizIndex = 0;
+    quizScore = 0;
+    
+    renderExamIntro();
+}
+
+function renderExamIntro() {
+    let html = `
+        <div class="fade-in max-w-2xl mx-auto text-center py-10">
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Simulador de Examen</h2>
+            <p class="text-gray-600 mb-8">Pondremos a prueba tus conocimientos sobre ISO 25010, ISO 12207 y Metodologías. Son 10 preguntas de opción múltiple aleatorias.</p>
+            <button onclick="renderExamQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:-translate-y-1">Comenzar Examen</button>
+        </div>
+    `;
+    document.getElementById('main-content').innerHTML = html;
+}
+
+function renderExamQuestion() {
+    const q = currentQuiz[currentQuizIndex];
+    const progress = ((currentQuizIndex) / currentQuiz.length) * 100;
+    
+    let html = `
+        <div class="fade-in max-w-3xl mx-auto pb-10">
+            <div class="mb-6 flex items-center justify-between text-sm font-medium text-gray-500">
+                <span>Pregunta ${currentQuizIndex + 1} de ${currentQuiz.length}</span>
+                <span>Progreso</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-8">
+                <div class="bg-blue-600 h-2 rounded-full" style="width: ${progress}%"></div>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">${q.q}</h3>
+                <div class="space-y-3" id="quiz-options">
+                    ${q.options.map((opt, i) => `
+                        <button onclick="selectExamAnswer(${i})" class="w-full text-left p-4 rounded-lg border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50 transition-colors focus:outline-none font-medium text-gray-700">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="quiz-feedback" class="mt-6 hidden p-4 rounded-lg"></div>
+                <div class="mt-6 text-right hidden" id="quiz-next-container">
+                    <button onclick="nextExamQuestion()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700">Continuar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('main-content').innerHTML = html;
+}
+
+function selectExamAnswer(selectedIndex) {
+    // Prevent multiple clicks
+    const btns = document.querySelectorAll('#quiz-options button');
+    btns.forEach(b => { b.disabled = true; b.classList.remove('hover:border-blue-400', 'hover:bg-blue-50'); });
+    
+    const q = currentQuiz[currentQuizIndex];
+    const isCorrect = selectedIndex === q.answer;
+    
+    if (isCorrect) quizScore++;
+    
+    // Highlight answers
+    btns[selectedIndex].classList.add(isCorrect ? 'border-green-500' : 'border-red-500', isCorrect ? 'bg-green-50' : 'bg-red-50');
+    if(!isCorrect) btns[q.answer].classList.add('border-green-500', 'bg-green-50');
+    
+    // Show Feedback
+    const fb = document.getElementById('quiz-feedback');
+    fb.classList.remove('hidden');
+    fb.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100', isCorrect ? 'text-green-800' : 'text-red-800');
+    fb.innerHTML = `
+        <div class="font-bold flex items-center gap-2 mb-1">
+            ${isCorrect ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ¡Correcto!' : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Incorrecto'}
+        </div>
+        <p class="text-sm">${q.exp}</p>
+    `;
+    
+    document.getElementById('quiz-next-container').classList.remove('hidden');
+}
+
+function nextExamQuestion() {
+    currentQuizIndex++;
+    if (currentQuizIndex < currentQuiz.length) {
+        renderExamQuestion();
+    } else {
+        renderExamResults();
+    }
+}
+
+function renderExamResults() {
+    const percentage = Math.round((quizScore / currentQuiz.length) * 100);
+    let message = "";
+    let color = "";
+    
+    if (percentage >= 80) {
+        message = "¡Excelente trabajo! Estás muy bien preparado para el examen.";
+        color = "text-green-600";
+    } else if (percentage >= 60) {
+        message = "Buen esfuerzo, pero necesitas repasar algunos conceptos clave.";
+        color = "text-yellow-600";
+    } else {
+        message = "Te recomendamos volver a leer los apuntes y utilizar las flashcards.";
+        color = "text-red-600";
+    }
+
+    let html = `
+        <div class="fade-in max-w-2xl mx-auto text-center py-10">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Resultados del Examen</h2>
+            
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mb-8">
+                <div class="text-6xl font-black ${color} mb-2">${percentage}%</div>
+                <div class="text-gray-500 font-medium">Acertaste ${quizScore} de ${currentQuiz.length} preguntas</div>
+                <p class="mt-6 text-gray-700 text-lg">${message}</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="startExam()" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow transition">Intentar de nuevo</button>
+                <button onclick="loadView('fundamentos')" class="px-6 py-3 bg-white text-gray-700 font-bold border border-gray-300 rounded-lg hover:bg-gray-50 transition">Volver al temario</button>
+            </div>
+        </div>
+    `;
+    document.getElementById('main-content').innerHTML = html;
+}
+
+// Run App
+window.onload = initApp;
+</script>
+</body>
+</html>
